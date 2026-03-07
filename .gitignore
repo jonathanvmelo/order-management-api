@@ -1,0 +1,34 @@
+# Build
+bin/
+obj/
+out/
+
+# Rider / VSCode
+.vscode/
+.idea/
+
+# Visual Studio
+.vs/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# User files
+*.user
+*.suo
+
+# Docker
+docker-compose.override.yml
+
+# Test results
+TestResults/
+
+# Coverage
+coverage/
+
+# Environment
+.env
