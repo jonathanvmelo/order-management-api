@@ -15,7 +15,7 @@ namespace OrderManagement.Domain.Entities
 
         public Money Total => UnitPrice * Quantity.Value;
 
-        private OrderItem() { }
+        // private OrderItem() { }
 
         public OrderItem(Guid orderId, Guid productId, Quantity quantity, Money unitPrice)
         {

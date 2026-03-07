@@ -19,7 +19,7 @@ namespace OrderManagement.Domain.Entities
 
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-        private Order() { } // EF
+        // private Order() { } // EF
 
         public Order(Guid customerId)
         {
