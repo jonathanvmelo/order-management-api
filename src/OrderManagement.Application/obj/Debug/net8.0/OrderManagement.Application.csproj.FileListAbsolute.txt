@@ -1,0 +1,16 @@
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/bin/Debug/net8.0/OrderManagement.Application.deps.json
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/bin/Debug/net8.0/OrderManagement.Application.dll
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/bin/Debug/net8.0/OrderManagement.Application.pdb
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/bin/Debug/net8.0/OrderManagement.Domain.dll
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/bin/Debug/net8.0/OrderManagement.Domain.pdb
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.csproj.AssemblyReference.cache
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.GeneratedMSBuildEditorConfig.editorconfig
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.AssemblyInfoInputs.cache
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.AssemblyInfo.cs
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.csproj.CoreCompileInputs.cache
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.sourcelink.json
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderMan.B2E1D241.Up2Date
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.dll
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/refint/OrderManagement.Application.dll
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/OrderManagement.Application.pdb
+/home/jota/dev/projects/OrderManagement/src/OrderManagement.Application/obj/Debug/net8.0/ref/OrderManagement.Application.dll
