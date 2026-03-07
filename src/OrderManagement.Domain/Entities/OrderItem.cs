@@ -15,10 +15,16 @@ namespace OrderManagement.Domain.Entities
 
         public Money Total => UnitPrice * Quantity.Value;
 
+        private OrderItem() { }
+
         public OrderItem(Guid orderId, Guid productId, Quantity quantity, Money unitPrice)
         {
+            if (orderId == Guid.Empty)
+                throw new ArgumentException("Pedido inválido.");
+
             if (productId == Guid.Empty)
                 throw new ArgumentException("Produto inválido.");
+
             OrderId = orderId;
             ProductId = productId;
             Quantity = quantity;

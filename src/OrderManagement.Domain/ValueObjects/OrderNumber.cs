@@ -4,19 +4,17 @@ namespace OrderManagement.Domain.ValueObjects
     {
         public string Value { get; }
 
+
         public OrderNumber()
         {
             Value = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..6]}";
         }
-        public override string ToString()
-        {
-            return Value;
-        }
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
 
+        public override string ToString() => Value;
+
+        public override bool Equals(object? obj)
+            => obj is OrderNumber o && Value == o.Value;
+
+        public override int GetHashCode() => Value.GetHashCode();
     }
-
 }

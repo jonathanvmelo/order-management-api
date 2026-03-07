@@ -8,7 +8,7 @@ namespace OrderManagement.Domain.Entities
     public class Order : BaseEntity
     {
         private readonly List<OrderItem> _items = [];
-        private readonly List<DomainEvent> _events = [];
+
         public Guid CustomerId { get; private set; }
 
         public OrderNumber OrderNumber { get; private set; }
@@ -19,11 +19,13 @@ namespace OrderManagement.Domain.Entities
 
         public IReadOnlyCollection<OrderItem> Items => _items.AsReadOnly();
 
-        public IReadOnlyCollection<DomainEvent> Events => _events.AsReadOnly();
-
+        private Order() { } // EF
 
         public Order(Guid customerId)
         {
+            if (customerId == Guid.Empty)
+                throw new ArgumentException("Cliente inválido.");
+
             CustomerId = customerId;
             OrderNumber = new OrderNumber();
             Status = OrderStatus.Pending;
@@ -32,22 +34,42 @@ namespace OrderManagement.Domain.Entities
             AddEvent(new OrderCreatedEvent(Id, customerId));
         }
 
-
         public void AddItem(Guid productId, Quantity quantity, Money unitPrice)
         {
-            if (Status != OrderStatus.Pending)
-                throw new InvalidOperationException("Não é possível modificar um pedido processado.");
+            EnsurePending();
+
+            if (productId == Guid.Empty)
+                throw new ArgumentException("Produto inválido.");
 
             var existingItem = _items.FirstOrDefault(i => i.ProductId == productId);
 
             if (existingItem is not null)
             {
+                var oldQuantity = existingItem.Quantity;
+
                 existingItem.IncreaseQuantity(quantity);
+
+                AddEvent(new OrderItemQuantityChangedEvent(
+                    Id,
+                    existingItem.Id,
+                    productId,
+                    oldQuantity,
+                    existingItem.Quantity
+                ));
             }
             else
             {
                 var item = new OrderItem(Id, productId, quantity, unitPrice);
+
                 _items.Add(item);
+
+                AddEvent(new OrderItemAddedEvent(
+                    Id,
+                    item.Id,
+                    productId,
+                    quantity,
+                    unitPrice
+                ));
             }
 
             RecalculateTotal();
@@ -55,8 +77,7 @@ namespace OrderManagement.Domain.Entities
 
         public void RemoveItem(Guid productId)
         {
-            if (Status != OrderStatus.Pending)
-                throw new InvalidOperationException("Não é possível remover itens após o pedido ser processado.");
+            EnsurePending();
 
             var item = _items.FirstOrDefault(i => i.ProductId == productId);
 
@@ -65,27 +86,39 @@ namespace OrderManagement.Domain.Entities
 
             _items.Remove(item);
 
+            AddEvent(new OrderItemRemovedEvent(
+                Id,
+                item.Id,
+                item.ProductId,
+                item.Quantity
+            ));
+
             RecalculateTotal();
         }
 
-        public void UpdateItemQuantity(Guid productId, int quantity)
+        public void UpdateItemQuantity(Guid productId, Quantity quantity)
         {
-            if (Status != OrderStatus.Pending)
-                throw new InvalidOperationException("Não é possível alterar itens após o pedido ser processado.");
-
-            if (quantity <= 0)
-                throw new ArgumentException("A quantidade deve ser maior que zero.");
+            EnsurePending();
 
             var item = _items.FirstOrDefault(i => i.ProductId == productId);
 
             if (item is null)
                 throw new InvalidOperationException("Item não encontrado no pedido.");
 
-            item.UpdateQuantity(new Quantity(quantity));
+            var oldQuantity = item.Quantity;
+
+            item.UpdateQuantity(quantity);
+
+            AddEvent(new OrderItemQuantityChangedEvent(
+                Id,
+                item.Id,
+                productId,
+                oldQuantity,
+                quantity
+            ));
 
             RecalculateTotal();
         }
-
 
         public void Cancel()
         {
@@ -96,17 +129,20 @@ namespace OrderManagement.Domain.Entities
                 throw new InvalidOperationException("Não é possível cancelar um pedido após o envio.");
 
             Status = OrderStatus.Cancelled;
+
+            AddEvent(new OrderCancelledEvent(Id));
         }
 
         public void MarkAsPaid()
         {
-            if (Status != OrderStatus.Pending)
-                throw new InvalidOperationException("Apenas pedidos pendentes podem ser pagos.");
+            EnsurePending();
 
             if (!_items.Any())
                 throw new InvalidOperationException("Não é possível pagar um pedido sem itens.");
 
             Status = OrderStatus.Paid;
+
+            AddEvent(new OrderPaidEvent(Id));
         }
 
         public void StartProcessing()
@@ -115,6 +151,8 @@ namespace OrderManagement.Domain.Entities
                 throw new InvalidOperationException("O pedido deve estar pago antes de iniciar o processamento.");
 
             Status = OrderStatus.Processing;
+
+            AddEvent(new OrderProcessingStartedEvent(Id, CustomerId));
         }
 
         public void Ship()
@@ -123,6 +161,8 @@ namespace OrderManagement.Domain.Entities
                 throw new InvalidOperationException("O pedido deve estar em processamento antes do envio.");
 
             Status = OrderStatus.Shipped;
+
+            AddEvent(new OrderShippedEvent(Id));
         }
 
         public void Deliver()
@@ -131,6 +171,8 @@ namespace OrderManagement.Domain.Entities
                 throw new InvalidOperationException("O pedido deve estar enviado antes da entrega.");
 
             Status = OrderStatus.Delivered;
+
+            AddEvent(new OrderDeliveredEvent(Id));
         }
 
         private void RecalculateTotal()
@@ -144,13 +186,11 @@ namespace OrderManagement.Domain.Entities
 
             TotalAmount = total;
         }
-        private void AddEvent(DomainEvent domainEvent)
+
+        private void EnsurePending()
         {
-            _events.Add(domainEvent);
-        }
-        public void ClearEvents()
-        {
-            _events.Clear();
+            if (Status != OrderStatus.Pending)
+                throw new InvalidOperationException("Itens só podem ser modificados em pedidos pendentes.");
         }
     }
 }
