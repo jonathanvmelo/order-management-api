@@ -1,0 +1,14 @@
+using OrderManagement.Domain.Common;
+
+namespace OrderManagement.Domain.Events
+{
+    public class OrderPaidEvent : DomainEvent
+    {
+        public Guid OrderId { get; }
+
+        public OrderPaidEvent(Guid orderId)
+        {
+            OrderId = orderId;
+        }
+    }
+}
